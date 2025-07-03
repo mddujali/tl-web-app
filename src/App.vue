@@ -1,7 +1,28 @@
 <script lang="ts" setup>
-import { RouterView } from 'vue-router'
+import { RouterView, useRoute } from 'vue-router'
+import GuestLayout from '@/layouts/GuestLayout.vue'
+import AppLayout from '@/layouts/AppLayout.vue'
+import { type Component, computed } from 'vue'
+
+const route = useRoute()
+const layouts: Record<string, Component> = {
+  guest: GuestLayout,
+  app: AppLayout,
+}
+
+const currentLayout = computed<Component>(() => {
+  const layoutKey = route.meta?.layout as keyof typeof layouts
+
+  if (!layouts[layoutKey]) {
+    console.warn(`Unknown layout: ${layoutKey}, falling back to AppLayout`)
+  }
+
+  return layouts[layoutKey] || AppLayout
+})
 </script>
 
 <template>
-  <RouterView />
+  <component :is="currentLayout">
+    <RouterView />
+  </component>
 </template>
