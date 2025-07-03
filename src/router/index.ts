@@ -7,6 +7,18 @@ const routes: RouteRecordRaw[] = [
     component: () => import('@/views/LoginPage.vue'),
     meta: { layout: 'guest' },
   },
+  {
+    path: '/ip-management',
+    name: 'ipManagement',
+    component: () => import('@/views/IpManagementPage.vue'),
+    meta: { layout: 'app' },
+  },
+  {
+    path: '/audit-logs',
+    name: 'auditLogs',
+    component: () => import('@/views/AuditLogsPage.vue'),
+    meta: { layout: 'app' },
+  },
 ]
 
 const router = createRouter({
