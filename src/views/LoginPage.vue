@@ -24,19 +24,29 @@ const handleLogin = async (): Promise<void> => {
     await authStore.login(credentials)
 
     await router.push({ name: 'ipManagement' })
-  } catch (error) {
-    if (error.isAxiosError) {
-      const errorResponse = error.response
+  } catch (error: unknown) {
+    if (error && typeof error === 'object' && 'isAxiosError' in error) {
+      const axiosError = error as {
+        isAxiosError: boolean
+        response: {
+          status: number
+          data: { errors?: { email: string[]; password: string[] }; message: string }
+        }
+      }
 
-      if (errorResponse.status === 422) {
-        errors.value = errorResponse.data.errors
+      if (axiosError.isAxiosError) {
+        const errorResponse = axiosError.response
+
+        if (errorResponse.status === 422) {
+          errors.value = errorResponse.data.errors || { email: [], password: [] }
+
+          return
+        }
+
+        errorMessage.value = errorResponse.data.message
 
         return
       }
-
-      errorMessage.value = errorResponse.data.message
-
-      return
     }
 
     errorMessage.value = 'An unexpected error occurred. Please try again later.'
