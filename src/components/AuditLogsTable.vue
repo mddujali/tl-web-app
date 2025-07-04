@@ -1,12 +1,30 @@
 <script lang="ts" setup>
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import type { AuditLog } from '@/types/AuditLog.ts'
+import api from '@/api'
+import type { FetchAuditLogsResponseData } from '@/types/FetchAuditLogsResponseData.ts'
 
 const auditLogs = ref<AuditLog[]>([])
+
+const handleFetchAuditLogs = async (): Promise<void> => {
+  try {
+    const response = await api.get('/audit-logs')
+
+    const { data }: FetchAuditLogsResponseData = response.data
+
+    auditLogs.value = data
+  } catch (error: unknown) {
+    console.log(error)
+  }
+}
 
 const handleView = (): void => {}
 
 const handleDelete = (): void => {}
+
+onMounted(() => {
+  void handleFetchAuditLogs()
+})
 </script>
 
 <template>
@@ -15,11 +33,16 @@ const handleDelete = (): void => {}
       <thead class="table-dark">
         <tr>
           <th scope="col">ID</th>
+
           <th scope="col">User</th>
+
           <th scope="col">Type</th>
+
           <th scope="col">Message</th>
+
           <th scope="col">Created Date</th>
-          <th scope="col" class="text-center">Actions</th>
+
+          <th scope="col" class="text-center" style="width: 90px">Actions</th>
         </tr>
       </thead>
 
@@ -27,16 +50,16 @@ const handleDelete = (): void => {}
         <tr v-for="auditLog in auditLogs" :key="auditLog.id">
           <td>{{ auditLog.id }}</td>
 
-          <td>{{ auditLog.user.name }}</td>
+          <td>{{ auditLog?.user?.name }}</td>
 
           <td>
             <span
               class="badge"
               :class="{
-                'bg-success': auditLog.type === 'INFO',
-                'bg-warning': auditLog.type === 'WARNING',
-                'bg-danger': auditLog.type === 'ERROR',
-                'bg-secondary': !['INFO', 'WARNING', 'ERROR'].includes(auditLog.type),
+                'bg-success': auditLog.type === 'info',
+                'bg-warning': auditLog.type === 'warning',
+                'bg-danger': auditLog.type === 'error',
+                'bg-secondary': !['info', 'warning', 'error'].includes(auditLog.type),
               }"
             >
               {{ auditLog.type }}
