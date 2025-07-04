@@ -1,14 +1,15 @@
 <script lang="ts" setup>
 import { ref, onMounted } from 'vue'
 import { useAuthStore } from '@/stores/auth'
-import type { IpAddress } from '@/types/IpAddress.ts'
+import type { IpAddress as IpAddressType } from '@/types/IpAddress.ts'
 import type { IpAddress as IpAddressModel } from '@/models/IpAddress.ts'
 import api from '@/api'
 import type { FetchIpAddressesResponseData } from '@/types/FetchIpAddressesResponseData.ts'
 import _ from 'lodash'
 
 const authStore = useAuthStore()
-const ipAddresses = ref<IpAddress[]>([])
+const ipAddresses = ref<IpAddressType[]>([])
+const emit = defineEmits<{ triggerEdit: [ipAddress: IpAddressType] }>()
 
 const handleFetchIpAddresses = async (): Promise<void> => {
   const response = await api.get('/ip-addresses', {
@@ -29,7 +30,7 @@ const handleFetchIpAddresses = async (): Promise<void> => {
 
 const handleView = (): void => {}
 
-const handleEdit = (): void => {}
+const handleEdit = (ipAddress: IpAddressType): void => emit('triggerEdit', ipAddress)
 
 const handleDelete = (): void => {}
 
@@ -91,7 +92,7 @@ onMounted(() => {
               <button
                 type="button"
                 class="btn btn-sm btn-outline-secondary"
-                @click="handleEdit()"
+                @click="handleEdit(ipAddress)"
                 title="Edit"
               >
                 <i class="fas fa-edit"></i>

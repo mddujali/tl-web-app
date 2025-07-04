@@ -1,8 +1,9 @@
 <script lang="ts" setup>
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import api from '@/api'
 import { useAuthStore } from '@/stores/auth.ts'
-import type { IpAddressValidationErrors } from '@/types/IpAddressValidationErrors'
+import type { IpAddressValidationErrors } from '@/types/IpAddressValidationErrors.ts'
+import type { IpAddress } from '@/types/IpAddress.ts'
 import _ from 'lodash'
 import { Modal } from 'bootstrap'
 
@@ -13,8 +14,22 @@ const comment = ref<string>('')
 const successMessage = ref<string>('')
 const errorMessage = ref<string>('')
 const errors = ref<IpAddressValidationErrors>(defaultErrors)
+const props = defineProps<{ selectedIpAddress: IpAddress | null }>()
+
 const authStore = useAuthStore()
-const emit = defineEmits<{ ipAddressSaved: [] }>()
+const emit = defineEmits<{ ipAddressSaved: []; 'update:selectedIpAddress': [null] }>()
+
+watch(
+  () => props.selectedIpAddress,
+  (newValue) => {
+    if (newValue) {
+      ipAddress.value = newValue.ipAddress
+      label.value = newValue.label
+      comment.value = newValue.comment
+    }
+  },
+  { immediate: true },
+)
 
 const resetFields = (): void => {
   ipAddress.value = ''
@@ -41,32 +56,41 @@ const handleClose = async (): Promise<void> => {
     const modal = Modal.getInstance(modalElement)
 
     modal?.hide()
-  }
 
-  resetForm()
+    setTimeout((): void => {
+      resetForm()
+
+      emit('update:selectedIpAddress', null)
+    }, 200)
+  }
 }
 
 const handleSave = async (): Promise<void> => {
   resetMessages()
 
   try {
-    await api.post(
-      'ip-addresses',
-      {
-        ip_address: ipAddress.value,
-        label: label.value,
-        comment: comment.value,
+    const requestMethod = !props.selectedIpAddress ? 'post' : 'put'
+    const requestUrl = !props.selectedIpAddress
+      ? '/ip-addresses'
+      : `/ip-addresses/${props.selectedIpAddress.id}`
+    const requestPayload = {
+      ip_address: ipAddress.value,
+      label: label.value,
+      comment: comment.value,
+    }
+    const requestConfig = {
+      headers: {
+        Authorization: `Bearer ${authStore.accessToken}`,
       },
-      {
-        headers: {
-          Authorization: `Bearer ${authStore.accessToken}`,
-        },
-      },
-    )
+    }
+
+    await api[requestMethod](requestUrl, requestPayload, requestConfig)
 
     successMessage.value = 'IP address has been saved.'
 
-    resetFields()
+    if (!props.selectedIpAddress) {
+      resetFields()
+    }
 
     emit('ipAddressSaved')
   } catch (error: unknown) {
@@ -118,14 +142,11 @@ const handleSave = async (): Promise<void> => {
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="saveIpAddressModalLabel">Add IP Address</h5>
+          <h5 class="modal-title fw-bold" id="saveIpAddressModalLabel">
+            {{ !selectedIpAddress ? 'Add' : 'Edit' }} IP Address
+          </h5>
 
-          <button
-            type="button"
-            class="btn-close"
-            data-bs-dismiss="modal"
-            aria-label="Close"
-          ></button>
+          <button type="button" class="btn-close" @click="handleClose()"></button>
         </div>
 
         <div class="modal-body">
@@ -138,6 +159,18 @@ const handleSave = async (): Promise<void> => {
           </div>
 
           <form>
+            <div class="mb-3" v-if="!!selectedIpAddress">
+              <label for="id" class="form-label fw-bold">ID</label>
+
+              <input
+                type="text"
+                class="form-control"
+                id="id"
+                :value="selectedIpAddress?.id || ''"
+                readonly
+              />
+            </div>
+
             <div class="mb-3">
               <label for="ipAddress" class="form-label fw-bold">IP Address</label>
 
@@ -150,6 +183,7 @@ const handleSave = async (): Promise<void> => {
                 ]"
                 id="ipAddress"
                 v-model="ipAddress"
+                :readonly="!!selectedIpAddress"
               />
 
               <div
@@ -189,6 +223,7 @@ const handleSave = async (): Promise<void> => {
                 ]"
                 id="comment"
                 v-model="comment"
+                :readonly="!!selectedIpAddress"
               />
 
               <div v-for="(error, index) in errors.comment" :key="index" class="invalid-feedback">

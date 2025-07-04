@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import api from '@/api'
-import type { Credentials } from '@/types/Credentials'
-import type { AuthState } from '@/types/AuthState'
+import type { Credentials } from '@/types/Credentials.ts'
+import type { AuthState } from '@/types/AuthState.ts'
 import type { LoginResponseData } from '@/types/LoginResponseData.ts'
 
 export const useAuthStore = defineStore('auth', {

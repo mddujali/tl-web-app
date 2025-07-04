@@ -3,8 +3,11 @@ import IpAddressTable from '@/components/IpAddressTable.vue'
 import SaveIpAddressModal from '@/components/SaveIpAddressModal.vue'
 import { Modal } from 'bootstrap'
 import { ref } from 'vue'
+import type { IpAddress } from '@/types/IpAddress.ts'
 
-const handleAdd = (): void => {
+const selectedIpAddress = ref<IpAddress | null>(null)
+
+const showModal = (): void => {
   const modalElement = document.getElementById('saveIpAddressModal')
 
   if (modalElement) {
@@ -12,6 +15,16 @@ const handleAdd = (): void => {
 
     modal.show()
   }
+}
+
+const handleAdd = (): void => {
+  showModal()
+}
+
+const handleEdit = (ipAddress: IpAddress): void => {
+  selectedIpAddress.value = ipAddress
+
+  showModal()
 }
 
 const ipAddressTableRef = ref<InstanceType<typeof IpAddressTable>>()
@@ -33,10 +46,13 @@ const handleIpAddressSaved = async (): Promise<void> => {
           </button>
         </div>
 
-        <IpAddressTable ref="ipAddressTableRef" />
+        <IpAddressTable ref="ipAddressTableRef" @triggerEdit="handleEdit($event)" />
       </div>
     </div>
 
-    <SaveIpAddressModal @ipAddressSaved="handleIpAddressSaved()" />
+    <SaveIpAddressModal
+      @ipAddressSaved="handleIpAddressSaved()"
+      v-model:selectedIpAddress="selectedIpAddress"
+    />
   </div>
 </template>
