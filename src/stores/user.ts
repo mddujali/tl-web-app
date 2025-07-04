@@ -18,7 +18,12 @@ export const useUserStore = defineStore('user', {
         const response = await api.get('/profile')
         const { data } = response.data
 
-        console.log(data)
+        this.id = data.id
+        this.name = data.name
+        this.email = data.email
+        this.role = data.role
+        this.created_at = data.created_at
+        this.updated_at = data.updated_at
       } catch (error) {
         throw error
       }

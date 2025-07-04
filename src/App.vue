@@ -42,13 +42,13 @@ function redirectIfNecessary(
   }
 }
 
-onMounted(() => {
+onMounted(async () => {
   authStore.loadAuthState()
 
   if (authStore.isAuthenticated) {
-    redirectIfNecessary(currentRouteName, true, 'ipManagement')
+    await userStore.fetch()
 
-    userStore.fetch()
+    redirectIfNecessary(currentRouteName, true, 'ipManagement')
   } else {
     redirectIfNecessary(currentRouteName, true, 'login')
   }

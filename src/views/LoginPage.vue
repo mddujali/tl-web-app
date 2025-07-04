@@ -2,6 +2,7 @@
 import { ref } from 'vue'
 import type { Credentials } from '@/types/Credentials.ts'
 import { useAuthStore } from '@/stores/auth.ts'
+import { useUserStore } from '@/stores/user.ts'
 import { useRouter } from 'vue-router'
 import type { LoginValidationErrors } from '@/types/LoginValidationErrors.ts'
 import _ from 'lodash'
@@ -12,6 +13,7 @@ const password = ref<string>('')
 const errorMessage = ref<string>('')
 const errors = ref<LoginValidationErrors>(defaultErrors)
 const authStore = useAuthStore()
+const userStore = useUserStore()
 const router = useRouter()
 
 const resetFields = (): void => {
@@ -40,6 +42,10 @@ const handleLogin = async (): Promise<void> => {
 
   try {
     await authStore.login(credentials)
+
+    if (authStore.isAuthenticated) {
+      await userStore.fetch()
+    }
 
     resetForm()
 

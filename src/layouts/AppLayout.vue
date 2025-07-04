@@ -1,10 +1,12 @@
 <script lang="ts" setup>
 import { useAuthStore } from '@/stores/auth.ts'
+import { useUserStore } from '@/stores/user.ts'
 import { useRouter } from 'vue-router'
 import { ref } from 'vue'
 import _ from 'lodash'
 
 const authStore = useAuthStore()
+const userStore = useUserStore()
 const router = useRouter()
 const toastMessage = ref<string>('')
 const showToast = ref<boolean>(false)
@@ -73,7 +75,7 @@ const handleLogout = async (): Promise<void> => {
               </router-link>
             </li>
 
-            <li>
+            <li v-if="userStore.role === 'super-admin'">
               <router-link class="nav-item nav-link" to="/audit-logs" active-class="active" exact>
                 Audit Logs
               </router-link>
