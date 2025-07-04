@@ -55,7 +55,7 @@ onMounted(() => {
 
           <th scope="col">Updated Date</th>
 
-          <th scope="col" class="text-center">Actions</th>
+          <th scope="col" class="text-center" style="width: 130px">Actions</th>
         </tr>
       </thead>
 
