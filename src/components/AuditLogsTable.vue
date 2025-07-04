@@ -5,6 +5,7 @@ import api from '@/api'
 import type { FetchAuditLogsResponseData } from '@/types/FetchAuditLogsResponseData.ts'
 
 const auditLogs = ref<AuditLog[]>([])
+const emit = defineEmits<{ triggerView: [auditLog: AuditLog] }>()
 
 const handleFetchAuditLogs = async (): Promise<void> => {
   try {
@@ -18,9 +19,7 @@ const handleFetchAuditLogs = async (): Promise<void> => {
   }
 }
 
-const handleView = (): void => {}
-
-const handleDelete = (): void => {}
+const handleView = (auditLog: AuditLog): void => emit('triggerView', auditLog)
 
 onMounted(() => {
   void handleFetchAuditLogs()
@@ -71,23 +70,14 @@ onMounted(() => {
           <td>{{ auditLog.created_at }}</td>
 
           <td>
-            <div class="d-flex justify-content-between">
+            <div class="d-flex justify-content-center">
               <button
                 type="button"
                 class="btn btn-sm btn-outline-primary"
-                @click="handleView()"
+                @click="handleView(auditLog)"
                 title="View"
               >
                 <i class="fas fa-eye"></i>
-              </button>
-
-              <button
-                type="button"
-                class="btn btn-sm btn-outline-danger"
-                @click="handleDelete()"
-                title="Delete"
-              >
-                <i class="fas fa-trash"></i>
               </button>
             </div>
           </td>
