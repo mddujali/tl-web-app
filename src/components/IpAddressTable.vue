@@ -1,8 +1,31 @@
 <script lang="ts" setup>
 import { ref, onMounted } from 'vue'
+import { useAuthStore } from '@/stores/auth'
 import type { IpAddress } from '@/types/IpAddress.ts'
+import type { IpAddress as IpAddressModel } from '@/models/IpAddress.ts'
+import api from '@/api'
+import type { FetchIpAddressesResponseData } from '@/types/FetchIpAddressesResponseData.ts'
+import _ from 'lodash'
 
+const authStore = useAuthStore()
 const ipAddresses = ref<IpAddress[]>([])
+
+const handleFetchIpAddresses = async (): Promise<void> => {
+  const response = await api.get('/ip-addresses', {
+    headers: { Authorization: `Bearer ${authStore.accessToken}` },
+  })
+
+  const { data }: FetchIpAddressesResponseData = response.data
+
+  ipAddresses.value = _.map(data, (ipAddress: IpAddressModel) => ({
+    id: ipAddress.id,
+    ipAddress: ipAddress.ip_address,
+    label: ipAddress.label,
+    comment: ipAddress.comment,
+    createdAt: ipAddress.created_at,
+    updatedAt: ipAddress.updated_at,
+  }))
+}
 
 const handleView = (): void => {}
 
@@ -11,40 +34,7 @@ const handleEdit = (): void => {}
 const handleDelete = (): void => {}
 
 onMounted(() => {
-  ipAddresses.value = [
-    {
-      id: 1,
-      ipAddress: '192.168.1.1',
-      label: 'Router',
-      comment: 'Dignissimos dolorem.',
-      createAt: '2025-06-30T05:59:19.000000Z',
-      updatedAt: '2025-06-30T05:59:19.000000Z',
-    },
-    {
-      id: 2,
-      ipAddress: '192.168.1.100',
-      label: 'Server',
-      comment: 'Dignissimos dolorem.',
-      createAt: '2025-06-30T05:59:19.000000Z',
-      updatedAt: '2025-06-30T05:59:19.000000Z',
-    },
-    {
-      id: 3,
-      ipAddress: '10.0.0.1',
-      label: 'Gateway',
-      comment: 'Dignissimos dolorem.',
-      createAt: '2025-06-30T05:59:19.000000Z',
-      updatedAt: '2025-06-30T05:59:19.000000Z',
-    },
-    {
-      id: 4,
-      ipAddress: '172.16.0.1',
-      label: 'Switch',
-      comment: 'Dignissimos dolorem.',
-      createAt: '2025-06-30T05:59:19.000000Z',
-      updatedAt: '2025-06-30T05:59:19.000000Z',
-    },
-  ]
+  void handleFetchIpAddresses()
 })
 </script>
 
@@ -58,6 +48,10 @@ onMounted(() => {
           <th scope="col">IP Address</th>
 
           <th scope="col">Label</th>
+
+          <th scope="col">Created Date</th>
+
+          <th scope="col">Updated Date</th>
 
           <th scope="col" class="text-center">Actions</th>
         </tr>
@@ -73,7 +67,11 @@ onMounted(() => {
 
           <td>{{ ipAddress.label }}</td>
 
-          <td style="width: 150px">
+          <td>{{ ipAddress.createdAt }}</td>
+
+          <td>{{ ipAddress.updatedAt }}</td>
+
+          <td>
             <div class="d-flex justify-content-between">
               <button
                 type="button"
