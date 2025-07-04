@@ -1,17 +1,45 @@
 <script lang="ts" setup>
 import { useAuthStore } from '@/stores/auth'
 import { useRouter } from 'vue-router'
+import { ref } from 'vue'
+import _ from 'lodash'
 
 const authStore = useAuthStore()
 const router = useRouter()
+const toastMessage = ref<string>('')
+const showToast = ref<boolean>(false)
 
 const handleLogout = async (): Promise<void> => {
   try {
     await authStore.logout()
 
     await router.push({ name: 'login' })
-  } catch (error) {
-    console.log(error)
+  } catch (error: unknown) {
+    let errorMessage = 'An unexpected error occurred. Please try again later.'
+
+    if (error && typeof error === 'object' && 'isAxiosError' in error) {
+      const axiosError = error as {
+        isAxiosError: boolean
+        response: {
+          status: number
+          data: { errors?: { email: string[]; password: string[] }; message: string }
+        }
+      }
+      if (axiosError.isAxiosError) {
+        errorMessage = _.get(
+          axiosError,
+          'response.data.message',
+          'Logout failed. Please try again.',
+        )
+      }
+    }
+
+    toastMessage.value = errorMessage
+    showToast.value = true
+
+    setTimeout(() => {
+      showToast.value = false
+    }, 5000)
   }
 }
 </script>
@@ -66,4 +94,31 @@ const handleLogout = async (): Promise<void> => {
   <main>
     <slot />
   </main>
+
+  <div class="toast-container position-fixed bottom-0 end-0 p-3">
+    <div
+      class="toast"
+      :class="{ show: showToast }"
+      role="alert"
+      aria-live="assertive"
+      aria-atomic="true"
+    >
+      <div class="toast-header bg-danger text-white">
+        <i class="fas fa-exclamation-triangle me-2"></i>
+
+        <strong class="me-auto">Error</strong>
+
+        <button
+          type="button"
+          class="btn-close btn-close-white"
+          @click="showToast = false"
+          aria-label="Close"
+        ></button>
+      </div>
+
+      <div class="toast-body">
+        {{ toastMessage }}
+      </div>
+    </div>
+  </div>
 </template>
