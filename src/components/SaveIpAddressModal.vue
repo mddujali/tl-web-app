@@ -11,6 +11,7 @@ const defaultErrors: IpAddressValidationErrors = { ip_address: [], label: [], co
 const ipAddress = ref<string>('')
 const label = ref<string>('')
 const comment = ref<string>('')
+const isSaving = ref<boolean>(false)
 const successMessage = ref<string>('')
 const errorMessage = ref<string>('')
 const errors = ref<IpAddressValidationErrors>(defaultErrors)
@@ -67,6 +68,7 @@ const handleClose = async (): Promise<void> => {
 
 const handleSave = async (): Promise<void> => {
   resetMessages()
+  isSaving.value = true
 
   try {
     const requestMethod = !props.selectedIpAddress ? 'post' : 'put'
@@ -126,6 +128,8 @@ const handleSave = async (): Promise<void> => {
     }
 
     errorMessage.value = 'An unexpected error occurred. Please try again later.'
+  } finally {
+    isSaving.value = false
   }
 }
 </script>
@@ -231,9 +235,24 @@ const handleSave = async (): Promise<void> => {
         </div>
 
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" @click="handleClose()">Close</button>
+          <button
+            type="button"
+            class="btn btn-secondary"
+            @click="handleClose()"
+            :disabled="isSaving"
+          >
+            {{ successMessage.length > 0 ? 'Close' : 'Cancel' }}
+          </button>
 
-          <button type="button" class="btn btn-primary" @click="handleSave()">Save</button>
+          <button type="button" class="btn btn-primary" @click="handleSave()" :disabled="isSaving">
+            <span
+              v-if="isSaving"
+              class="spinner-border spinner-border-sm me-1"
+              aria-hidden="true"
+            ></span>
+
+            {{ isSaving ? 'Saving...' : 'Save' }}
+          </button>
         </div>
       </div>
     </div>
