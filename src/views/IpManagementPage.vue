@@ -65,7 +65,7 @@ const handleTriggerRefreshData = async (): Promise<void> => {
     <div class="row">
       <div class="col-12">
         <div class="d-flex justify-content-between align-items-center mb-4">
-          <h4>IP Address Management</h4>
+          <h4 class="fw-bold">IP Address Management</h4>
 
           <button class="btn btn-primary" @click="handleAdd()">
             <i class="fas fa-plus"></i> Add

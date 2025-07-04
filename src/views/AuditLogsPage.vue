@@ -7,7 +7,7 @@ import AuditLogsTable from '@/components/AuditLogsTable.vue'
     <div class="row">
       <div class="col-12">
         <div class="d-flex justify-content-between align-items-center mb-4">
-          <h4>Audit Logs</h4>
+          <h4 class="fw-bold">Audit Logs</h4>
         </div>
 
         <AuditLogsTable />
