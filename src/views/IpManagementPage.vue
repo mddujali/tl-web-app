@@ -5,6 +5,7 @@ import { Modal } from 'bootstrap'
 import { ref } from 'vue'
 import type { IpAddress } from '@/types/IpAddress.ts'
 import DeleteIpAddressModal from '@/components/DeleteIpAddressModal.vue'
+import ViewIpAddressModal from '@/components/ViewIpAddressModal.vue'
 
 const selectedIpAddress = ref<IpAddress | null>(null)
 
@@ -28,8 +29,10 @@ const handleEdit = (ipAddress: IpAddress): void => {
   showSaveIpAddressModal()
 }
 
-const showDeleteIpAddressModal = (): void => {
-  const modalElement = document.getElementById('deleteIpAddressModal')
+const handleView = (ipAddress: IpAddress): void => {
+  selectedIpAddress.value = ipAddress
+
+  const modalElement = document.getElementById('viewIpAddressModal')
 
   if (modalElement) {
     const modal = new Modal(modalElement)
@@ -41,7 +44,13 @@ const showDeleteIpAddressModal = (): void => {
 const handleDelete = (ipAddress: IpAddress): void => {
   selectedIpAddress.value = ipAddress
 
-  showDeleteIpAddressModal()
+  const modalElement = document.getElementById('deleteIpAddressModal')
+
+  if (modalElement) {
+    const modal = new Modal(modalElement)
+
+    modal.show()
+  }
 }
 
 const ipAddressTableRef = ref<InstanceType<typeof IpAddressTable>>()
@@ -65,16 +74,20 @@ const handleTriggerRefreshData = async (): Promise<void> => {
 
         <IpAddressTable
           ref="ipAddressTableRef"
+          @triggerView="handleView($event)"
           @triggerEdit="handleEdit($event)"
           @triggerDelete="handleDelete($event)"
         />
       </div>
     </div>
 
+    <ViewIpAddressModal :selectedIpAddress />
+
     <SaveIpAddressModal
       @ipAddressSaved="handleTriggerRefreshData()"
       v-model:selectedIpAddress="selectedIpAddress"
     />
+
     <DeleteIpAddressModal
       @ipAddressDeleted="handleTriggerRefreshData()"
       v-model:selectedIpAddress="selectedIpAddress"

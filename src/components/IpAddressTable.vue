@@ -10,6 +10,7 @@ import _ from 'lodash'
 const authStore = useAuthStore()
 const ipAddresses = ref<IpAddressType[]>([])
 const emit = defineEmits<{
+  triggerView: [ipAddress: IpAddressType]
   triggerEdit: [ipAddress: IpAddressType]
   triggerDelete: [ipAddress: IpAddressType]
 }>()
@@ -31,7 +32,7 @@ const handleFetchIpAddresses = async (): Promise<void> => {
   }))
 }
 
-const handleView = (): void => {}
+const handleView = (ipAddress: IpAddressType): void => emit('triggerView', ipAddress)
 
 const handleEdit = (ipAddress: IpAddressType): void => emit('triggerEdit', ipAddress)
 
@@ -86,7 +87,7 @@ onMounted(() => {
               <button
                 type="button"
                 class="btn btn-sm btn-outline-primary"
-                @click="handleView()"
+                @click="handleView(ipAddress)"
                 title="View"
               >
                 <i class="fas fa-eye"></i>
