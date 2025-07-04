@@ -51,7 +51,7 @@ const handleClose = async (): Promise<void> => {
                 </div>
 
                 <div class="col-sm-8">
-                  {{ selectedIpAddress.ipAddress }}
+                  {{ selectedIpAddress.ip_address }}
                 </div>
               </div>
 
@@ -81,7 +81,7 @@ const handleClose = async (): Promise<void> => {
                 </div>
 
                 <div class="col-sm-8">
-                  {{ selectedIpAddress.createdAt }}
+                  {{ selectedIpAddress.created_at }}
                 </div>
               </div>
 
@@ -91,7 +91,7 @@ const handleClose = async (): Promise<void> => {
                 </div>
 
                 <div class="col-sm-8">
-                  {{ selectedIpAddress.updatedAt }}
+                  {{ selectedIpAddress.updated_at }}
                 </div>
               </div>
             </div>

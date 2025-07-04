@@ -6,8 +6,8 @@ import type { LoginResponseData } from '@/types/LoginResponseData.ts'
 
 export const useAuthStore = defineStore('auth', {
   state: (): AuthState => ({
-    accessToken: null,
-    refreshToken: null,
+    access_token: null,
+    refresh_token: null,
     isAuthenticated: false,
   }),
 
@@ -17,12 +17,12 @@ export const useAuthStore = defineStore('auth', {
         const response = await api.post('/auth/login', credentials)
         const { data }: LoginResponseData = response.data
 
-        this.accessToken = data.access_token
-        this.refreshToken = data.refresh_token
+        this.access_token = data.access_token
+        this.refresh_token = data.refresh_token
         this.isAuthenticated = true
 
-        localStorage.setItem('accessToken', this.accessToken!)
-        localStorage.setItem('refreshToken', this.refreshToken!)
+        localStorage.setItem('access_token', this.access_token!)
+        localStorage.setItem('refresh_token', this.refresh_token!)
       } catch (error) {
         throw error
       }
@@ -34,7 +34,7 @@ export const useAuthStore = defineStore('auth', {
           '/auth/logout',
           {},
           {
-            headers: { Authorization: `Bearer ${this.accessToken}` },
+            headers: { Authorization: `Bearer ${this.access_token}` },
           },
         )
 
@@ -45,21 +45,21 @@ export const useAuthStore = defineStore('auth', {
     },
 
     clearAuthState(): void {
-      this.accessToken = null
-      this.refreshToken = null
+      this.access_token = null
+      this.refresh_token = null
       this.isAuthenticated = false
 
-      localStorage.removeItem('accessToken')
-      localStorage.removeItem('refreshToken')
+      localStorage.removeItem('access_token')
+      localStorage.removeItem('refresh_token')
     },
 
     loadAuthState(): void {
-      const accessToken = localStorage.getItem('accessToken')
-      const refreshToken = localStorage.getItem('refreshToken')
+      const access_token = localStorage.getItem('access_token')
+      const refresh_token = localStorage.getItem('refresh_token')
 
-      if (accessToken && refreshToken) {
-        this.accessToken = accessToken
-        this.refreshToken = refreshToken
+      if (access_token && refresh_token) {
+        this.access_token = access_token
+        this.refresh_token = refresh_token
         this.isAuthenticated = true
       }
     },

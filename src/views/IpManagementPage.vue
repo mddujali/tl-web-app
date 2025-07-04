@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import IpAddressTable from '@/components/IpAddressTable.vue'
+import IpAddressTable from '@/components/IpAddressesTable.vue'
 import SaveIpAddressModal from '@/components/SaveIpAddressModal.vue'
 import { Modal } from 'bootstrap'
 import { ref } from 'vue'

@@ -24,7 +24,7 @@ watch(
   () => props.selectedIpAddress,
   (newValue) => {
     if (newValue) {
-      ipAddress.value = newValue.ipAddress
+      ipAddress.value = newValue.ip_address
       label.value = newValue.label
       comment.value = newValue.comment
     }
@@ -82,7 +82,7 @@ const handleSave = async (): Promise<void> => {
     }
     const requestConfig = {
       headers: {
-        Authorization: `Bearer ${authStore.accessToken}`,
+        Authorization: `Bearer ${authStore.access_token}`,
       },
     }
 

@@ -1,42 +1,33 @@
 <script lang="ts" setup>
 import { ref, onMounted } from 'vue'
 import { useAuthStore } from '@/stores/auth'
-import type { IpAddress as IpAddressType } from '@/types/IpAddress.ts'
-import type { IpAddress as IpAddressModel } from '@/models/IpAddress.ts'
+import type { IpAddress } from '@/types/IpAddress.ts'
 import api from '@/api'
 import type { FetchIpAddressesResponseData } from '@/types/FetchIpAddressesResponseData.ts'
-import _ from 'lodash'
 
 const authStore = useAuthStore()
-const ipAddresses = ref<IpAddressType[]>([])
+const ipAddresses = ref<IpAddress[]>([])
 const emit = defineEmits<{
-  triggerView: [ipAddress: IpAddressType]
-  triggerEdit: [ipAddress: IpAddressType]
-  triggerDelete: [ipAddress: IpAddressType]
+  triggerView: [ipAddress: IpAddress]
+  triggerEdit: [ipAddress: IpAddress]
+  triggerDelete: [ipAddress: IpAddress]
 }>()
 
 const handleFetchIpAddresses = async (): Promise<void> => {
   const response = await api.get('/ip-addresses', {
-    headers: { Authorization: `Bearer ${authStore.accessToken}` },
+    headers: { Authorization: `Bearer ${authStore.access_token}` },
   })
 
   const { data }: FetchIpAddressesResponseData = response.data
 
-  ipAddresses.value = _.map(data, (ipAddress: IpAddressModel) => ({
-    id: ipAddress.id,
-    ipAddress: ipAddress.ip_address,
-    label: ipAddress.label,
-    comment: ipAddress.comment,
-    createdAt: ipAddress.created_at,
-    updatedAt: ipAddress.updated_at,
-  }))
+  ipAddresses.value = data
 }
 
-const handleView = (ipAddress: IpAddressType): void => emit('triggerView', ipAddress)
+const handleView = (ipAddress: IpAddress): void => emit('triggerView', ipAddress)
 
-const handleEdit = (ipAddress: IpAddressType): void => emit('triggerEdit', ipAddress)
+const handleEdit = (ipAddress: IpAddress): void => emit('triggerEdit', ipAddress)
 
-const handleDelete = (ipAddress: IpAddressType): void => emit('triggerDelete', ipAddress)
+const handleDelete = (ipAddress: IpAddress): void => emit('triggerDelete', ipAddress)
 
 const triggerRefreshData = async (): Promise<void> => {
   await handleFetchIpAddresses()
@@ -73,14 +64,14 @@ onMounted(() => {
           <td>{{ ipAddress.id }}</td>
 
           <td>
-            <code class="text-primary">{{ ipAddress.ipAddress }}</code>
+            <code class="text-primary">{{ ipAddress.ip_address }}</code>
           </td>
 
           <td>{{ ipAddress.label }}</td>
 
-          <td>{{ ipAddress.createdAt }}</td>
+          <td>{{ ipAddress.created_at }}</td>
 
-          <td>{{ ipAddress.updatedAt }}</td>
+          <td>{{ ipAddress.updated_at }}</td>
 
           <td>
             <div class="d-flex justify-content-between">

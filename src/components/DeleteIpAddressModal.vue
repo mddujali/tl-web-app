@@ -52,7 +52,7 @@ const handleDelete = async (): Promise<void> => {
     const requestUrl = `/ip-addresses/${props.selectedIpAddress.id}`
     const requestConfig = {
       headers: {
-        Authorization: `Bearer ${authStore.accessToken}`,
+        Authorization: `Bearer ${authStore.access_token}`,
       },
     }
 
@@ -147,7 +147,7 @@ const handleDelete = async (): Promise<void> => {
                   </div>
 
                   <div class="col-sm-9">
-                    {{ selectedIpAddress.ipAddress }}
+                    {{ selectedIpAddress.ip_address }}
                   </div>
                 </div>
 
