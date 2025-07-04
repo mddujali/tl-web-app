@@ -1,6 +1,18 @@
 <script lang="ts" setup>
-const handleLogout = (): void => {
-  console.log('Do something...')
+import { useAuthStore } from '@/stores/auth'
+import { useRouter } from 'vue-router'
+
+const authStore = useAuthStore()
+const router = useRouter()
+
+const handleLogout = async (): Promise<void> => {
+  try {
+    await authStore.logout()
+
+    await router.push({ name: 'login' })
+  } catch (error) {
+    console.log(error)
+  }
 }
 </script>
 

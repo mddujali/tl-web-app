@@ -25,5 +25,29 @@ export const useAuthStore = defineStore('auth', {
         throw error
       }
     },
+
+    async logout(): Promise<void> {
+      try {
+        await api.post(
+          '/auth/logout',
+          {},
+          {
+            headers: { Authorization: `Bearer ${this.accessToken}` },
+          },
+        )
+
+        this.clearAuthState()
+      } catch (error) {
+        throw error
+      }
+    },
+
+    clearAuthState(): void {
+      this.accessToken = null
+      this.refreshToken = null
+
+      localStorage.removeItem('accessToken')
+      localStorage.removeItem('refreshToken')
+    },
   },
 })
