@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { ref } from 'vue'
 import type { Credentials } from '@/types/Credentials.ts'
-import { useAuthStore } from '@/stores/auth'
+import { useAuthStore } from '@/stores/auth.ts'
 import { useRouter } from 'vue-router'
 import type { LoginValidationErrors } from '@/types/LoginValidationErrors.ts'
 import _ from 'lodash'

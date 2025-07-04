@@ -4,7 +4,8 @@ import GuestLayout from '@/layouts/GuestLayout.vue'
 import AppLayout from '@/layouts/AppLayout.vue'
 import { type Component, computed } from 'vue'
 import { onMounted } from 'vue'
-import { useAuthStore } from '@/stores/auth'
+import { useAuthStore } from '@/stores/auth.ts'
+import { useUserStore } from '@/stores/user.ts'
 import { useRouter } from 'vue-router'
 
 const route = useRoute()
@@ -24,6 +25,7 @@ const currentLayout = computed<Component>(() => {
 })
 
 const authStore = useAuthStore()
+const userStore = useUserStore()
 const router = useRouter()
 const currentRouteName = router.currentRoute.value.name
 
@@ -45,6 +47,8 @@ onMounted(() => {
 
   if (authStore.isAuthenticated) {
     redirectIfNecessary(currentRouteName, true, 'ipManagement')
+
+    userStore.fetch()
   } else {
     redirectIfNecessary(currentRouteName, true, 'login')
   }

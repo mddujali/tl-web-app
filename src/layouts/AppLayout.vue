@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { useAuthStore } from '@/stores/auth'
+import { useAuthStore } from '@/stores/auth.ts'
 import { useRouter } from 'vue-router'
 import { ref } from 'vue'
 import _ from 'lodash'
