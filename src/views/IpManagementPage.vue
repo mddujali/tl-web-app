@@ -1,7 +1,17 @@
 <script lang="ts" setup>
 import IpAddressTable from '@/components/IpAddressTable.vue'
+import SaveIpAddressModal from '@/components/SaveIpAddressModal.vue'
+import { Modal } from 'bootstrap'
 
-const handleAdd = (): void => {}
+const handleAdd = (): void => {
+  const modalElement = document.getElementById('saveIpAddressModal')
+
+  if (modalElement) {
+    const modal = new Modal(modalElement)
+
+    modal.show()
+  }
+}
 </script>
 
 <template>
@@ -19,5 +29,7 @@ const handleAdd = (): void => {}
         <IpAddressTable />
       </div>
     </div>
+
+    <SaveIpAddressModal />
   </div>
 </template>
