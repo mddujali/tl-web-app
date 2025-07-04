@@ -1,7 +1,6 @@
 <script lang="ts" setup>
 import { ref } from 'vue'
 import api from '@/api'
-import { useAuthStore } from '@/stores/auth.ts'
 import type { IpAddress } from '@/types/IpAddress.ts'
 import _ from 'lodash'
 import { Modal } from 'bootstrap'
@@ -11,7 +10,6 @@ const errorMessage = ref<string>('')
 const isDeleting = ref<boolean>(false)
 const props = defineProps<{ selectedIpAddress: IpAddress | null }>()
 
-const authStore = useAuthStore()
 const emit = defineEmits<{ ipAddressDeleted: []; 'update:selectedIpAddress': [null] }>()
 
 const resetMessages = (): void => {
@@ -49,14 +47,7 @@ const handleDelete = async (): Promise<void> => {
   isDeleting.value = true
 
   try {
-    const requestUrl = `/ip-addresses/${props.selectedIpAddress.id}`
-    const requestConfig = {
-      headers: {
-        Authorization: `Bearer ${authStore.access_token}`,
-      },
-    }
-
-    await api.delete(requestUrl, requestConfig)
+    await api.delete(`/ip-addresses/${props.selectedIpAddress.id}`)
 
     successMessage.value = 'IP address has been deleted.'
 

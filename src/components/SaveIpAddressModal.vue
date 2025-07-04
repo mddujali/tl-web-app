@@ -1,7 +1,6 @@
 <script lang="ts" setup>
 import { ref, watch } from 'vue'
 import api from '@/api'
-import { useAuthStore } from '@/stores/auth.ts'
 import type { IpAddressValidationErrors } from '@/types/IpAddressValidationErrors.ts'
 import type { IpAddress } from '@/types/IpAddress.ts'
 import _ from 'lodash'
@@ -17,7 +16,6 @@ const errorMessage = ref<string>('')
 const errors = ref<IpAddressValidationErrors>(defaultErrors)
 const props = defineProps<{ selectedIpAddress: IpAddress | null }>()
 
-const authStore = useAuthStore()
 const emit = defineEmits<{ ipAddressSaved: []; 'update:selectedIpAddress': [null] }>()
 
 watch(
@@ -80,13 +78,8 @@ const handleSave = async (): Promise<void> => {
       label: label.value,
       comment: comment.value,
     }
-    const requestConfig = {
-      headers: {
-        Authorization: `Bearer ${authStore.access_token}`,
-      },
-    }
 
-    await api[requestMethod](requestUrl, requestPayload, requestConfig)
+    await api[requestMethod](requestUrl, requestPayload)
 
     successMessage.value = 'IP address has been saved.'
 

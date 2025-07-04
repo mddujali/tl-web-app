@@ -1,4 +1,4 @@
-export interface LoginResponseData {
+export interface AuthResponseData {
   message: string
   data: {
     access_token: string

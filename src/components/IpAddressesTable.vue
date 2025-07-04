@@ -1,11 +1,9 @@
 <script lang="ts" setup>
 import { ref, onMounted } from 'vue'
-import { useAuthStore } from '@/stores/auth'
 import type { IpAddress } from '@/types/IpAddress.ts'
 import api from '@/api'
 import type { FetchIpAddressesResponseData } from '@/types/FetchIpAddressesResponseData.ts'
 
-const authStore = useAuthStore()
 const ipAddresses = ref<IpAddress[]>([])
 const emit = defineEmits<{
   triggerView: [ipAddress: IpAddress]
@@ -14,13 +12,15 @@ const emit = defineEmits<{
 }>()
 
 const handleFetchIpAddresses = async (): Promise<void> => {
-  const response = await api.get('/ip-addresses', {
-    headers: { Authorization: `Bearer ${authStore.access_token}` },
-  })
+  try {
+    const response = await api.get('/ip-addresses')
 
-  const { data }: FetchIpAddressesResponseData = response.data
+    const { data }: FetchIpAddressesResponseData = response.data
 
-  ipAddresses.value = data
+    ipAddresses.value = data
+  } catch (error: unknown) {
+    console.log(error)
+  }
 }
 
 const handleView = (ipAddress: IpAddress): void => emit('triggerView', ipAddress)

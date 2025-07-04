@@ -2,7 +2,7 @@ import { defineStore } from 'pinia'
 import api from '@/api'
 import type { Credentials } from '@/types/Credentials.ts'
 import type { AuthState } from '@/types/AuthState.ts'
-import type { LoginResponseData } from '@/types/LoginResponseData.ts'
+import type { AuthResponseData } from '@/types/AuthResponseData.ts'
 
 export const useAuthStore = defineStore('auth', {
   state: (): AuthState => ({
@@ -15,14 +15,12 @@ export const useAuthStore = defineStore('auth', {
     async login(credentials: Credentials): Promise<void> {
       try {
         const response = await api.post('/auth/login', credentials)
-        const { data }: LoginResponseData = response.data
+        const { data }: AuthResponseData = response.data
 
-        this.access_token = data.access_token
-        this.refresh_token = data.refresh_token
-        this.isAuthenticated = true
-
-        localStorage.setItem('access_token', this.access_token!)
-        localStorage.setItem('refresh_token', this.refresh_token!)
+        this.setTokens({
+          access_token: data.access_token,
+          refresh_token: data.refresh_token,
+        })
       } catch (error) {
         throw error
       }
@@ -30,18 +28,21 @@ export const useAuthStore = defineStore('auth', {
 
     async logout(): Promise<void> {
       try {
-        await api.post(
-          '/auth/logout',
-          {},
-          {
-            headers: { Authorization: `Bearer ${this.access_token}` },
-          },
-        )
+        await api.post('/auth/logout')
 
         this.clearAuthState()
       } catch (error) {
         throw error
       }
+    },
+
+    setTokens(tokens: { access_token: string; refresh_token: string }): void {
+      this.access_token = tokens.access_token
+      this.refresh_token = tokens.refresh_token
+      this.isAuthenticated = true
+
+      localStorage.setItem('access_token', tokens.access_token)
+      localStorage.setItem('refresh_token', tokens.refresh_token)
     },
 
     clearAuthState(): void {
