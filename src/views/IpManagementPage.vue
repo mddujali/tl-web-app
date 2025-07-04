@@ -4,10 +4,11 @@ import SaveIpAddressModal from '@/components/SaveIpAddressModal.vue'
 import { Modal } from 'bootstrap'
 import { ref } from 'vue'
 import type { IpAddress } from '@/types/IpAddress.ts'
+import DeleteIpAddressModal from '@/components/DeleteIpAddressModal.vue'
 
 const selectedIpAddress = ref<IpAddress | null>(null)
 
-const showModal = (): void => {
+const showSaveIpAddressModal = (): void => {
   const modalElement = document.getElementById('saveIpAddressModal')
 
   if (modalElement) {
@@ -18,18 +19,34 @@ const showModal = (): void => {
 }
 
 const handleAdd = (): void => {
-  showModal()
+  showSaveIpAddressModal()
 }
 
 const handleEdit = (ipAddress: IpAddress): void => {
   selectedIpAddress.value = ipAddress
 
-  showModal()
+  showSaveIpAddressModal()
+}
+
+const showDeleteIpAddressModal = (): void => {
+  const modalElement = document.getElementById('deleteIpAddressModal')
+
+  if (modalElement) {
+    const modal = new Modal(modalElement)
+
+    modal.show()
+  }
+}
+
+const handleDelete = (ipAddress: IpAddress): void => {
+  selectedIpAddress.value = ipAddress
+
+  showDeleteIpAddressModal()
 }
 
 const ipAddressTableRef = ref<InstanceType<typeof IpAddressTable>>()
 
-const handleIpAddressSaved = async (): Promise<void> => {
+const handleTriggerRefreshData = async (): Promise<void> => {
   await ipAddressTableRef.value?.triggerRefreshData()
 }
 </script>
@@ -46,12 +63,20 @@ const handleIpAddressSaved = async (): Promise<void> => {
           </button>
         </div>
 
-        <IpAddressTable ref="ipAddressTableRef" @triggerEdit="handleEdit($event)" />
+        <IpAddressTable
+          ref="ipAddressTableRef"
+          @triggerEdit="handleEdit($event)"
+          @triggerDelete="handleDelete($event)"
+        />
       </div>
     </div>
 
     <SaveIpAddressModal
-      @ipAddressSaved="handleIpAddressSaved()"
+      @ipAddressSaved="handleTriggerRefreshData()"
+      v-model:selectedIpAddress="selectedIpAddress"
+    />
+    <DeleteIpAddressModal
+      @ipAddressDeleted="handleTriggerRefreshData()"
       v-model:selectedIpAddress="selectedIpAddress"
     />
   </div>

@@ -9,7 +9,10 @@ import _ from 'lodash'
 
 const authStore = useAuthStore()
 const ipAddresses = ref<IpAddressType[]>([])
-const emit = defineEmits<{ triggerEdit: [ipAddress: IpAddressType] }>()
+const emit = defineEmits<{
+  triggerEdit: [ipAddress: IpAddressType]
+  triggerDelete: [ipAddress: IpAddressType]
+}>()
 
 const handleFetchIpAddresses = async (): Promise<void> => {
   const response = await api.get('/ip-addresses', {
@@ -32,7 +35,7 @@ const handleView = (): void => {}
 
 const handleEdit = (ipAddress: IpAddressType): void => emit('triggerEdit', ipAddress)
 
-const handleDelete = (): void => {}
+const handleDelete = (ipAddress: IpAddressType): void => emit('triggerDelete', ipAddress)
 
 const triggerRefreshData = async (): Promise<void> => {
   await handleFetchIpAddresses()
@@ -101,7 +104,7 @@ onMounted(() => {
               <button
                 type="button"
                 class="btn btn-sm btn-outline-danger"
-                @click="handleDelete()"
+                @click="handleDelete(ipAddress)"
                 title="Delete"
               >
                 <i class="fas fa-trash"></i>
