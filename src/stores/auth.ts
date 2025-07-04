@@ -8,7 +8,6 @@ export const useAuthStore = defineStore('auth', {
   state: (): AuthState => ({
     access_token: null,
     refresh_token: null,
-    isAuthenticated: false,
   }),
 
   actions: {
@@ -39,7 +38,6 @@ export const useAuthStore = defineStore('auth', {
     setTokens(tokens: { access_token: string; refresh_token: string }): void {
       this.access_token = tokens.access_token
       this.refresh_token = tokens.refresh_token
-      this.isAuthenticated = true
 
       localStorage.setItem('access_token', tokens.access_token)
       localStorage.setItem('refresh_token', tokens.refresh_token)
@@ -48,7 +46,6 @@ export const useAuthStore = defineStore('auth', {
     clearAuthState(): void {
       this.access_token = null
       this.refresh_token = null
-      this.isAuthenticated = false
 
       localStorage.removeItem('access_token')
       localStorage.removeItem('refresh_token')
@@ -61,8 +58,13 @@ export const useAuthStore = defineStore('auth', {
       if (access_token && refresh_token) {
         this.access_token = access_token
         this.refresh_token = refresh_token
-        this.isAuthenticated = true
       }
+    },
+  },
+
+  getters: {
+    isAuthenticated(): boolean {
+      return !!this.access_token && !!this.refresh_token
     },
   },
 })
