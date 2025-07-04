@@ -17,7 +17,7 @@ const currentLayout = computed<Component>(() => {
     console.warn(`Unknown layout: ${layoutKey}, falling back to AppLayout`)
   }
 
-  return layouts[layoutKey] || AppLayout
+  return layouts[layoutKey] || GuestLayout
 })
 </script>
 

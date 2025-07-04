@@ -1,7 +1,57 @@
+<script lang="ts" setup>
+import { ref } from 'vue'
+import type { Credentials } from '@/types/Credentials.ts'
+import { useAuthStore } from '@/stores/auth'
+import { useRouter } from 'vue-router'
+
+const email = ref<string>('')
+const password = ref<string>('')
+const errorMessage = ref<string>('')
+const errors = ref<{ email: string[]; password: string[] }>({
+  email: [],
+  password: [],
+})
+const authStore = useAuthStore()
+const router = useRouter()
+
+const handleLogin = async (): Promise<void> => {
+  const credentials: Credentials = {
+    email: email.value,
+    password: password.value,
+  }
+
+  try {
+    await authStore.login(credentials)
+
+    await router.push({ name: 'ipManagement' })
+  } catch (error) {
+    if (error.isAxiosError) {
+      const errorResponse = error.response
+
+      if (errorResponse.status === 422) {
+        errors.value = errorResponse.data.errors
+
+        return
+      }
+
+      errorMessage.value = errorResponse.data.message
+
+      return
+    }
+
+    errorMessage.value = 'An unexpected error occurred. Please try again later.'
+  }
+}
+</script>
+
 <template>
   <div class="container d-flex justify-content-center align-items-center vh-100">
     <div class="card shadow-sm p-4">
       <h1 class="h4 mb-4 text-center fw-bold">Login</h1>
+
+      <div v-if="errorMessage.length > 0" class="alert alert-danger" role="alert">
+        {{ errorMessage }}
+      </div>
 
       <form @submit.prevent="handleLogin()">
         <div class="mb-3">
@@ -12,9 +62,13 @@
             type="email"
             id="email"
             class="form-control"
+            :class="['form-control', { 'is-invalid': errors.email.length > 0 }]"
             placeholder="Enter your email"
-            required
           />
+
+          <div v-for="(error, index) in errors.email" :key="index" class="invalid-feedback">
+            {{ error }}
+          </div>
         </div>
 
         <div class="mb-3">
@@ -25,9 +79,13 @@
             type="password"
             id="password"
             class="form-control"
+            :class="['form-control', { 'is-invalid': errors.email.length > 0 }]"
             placeholder="Enter your password"
-            required
           />
+
+          <div v-for="(error, index) in errors.password" :key="index" class="invalid-feedback">
+            {{ error }}
+          </div>
         </div>
 
         <button type="submit" class="btn btn-primary w-100">Login</button>
@@ -35,25 +93,6 @@
     </div>
   </div>
 </template>
-
-<script lang="ts" setup>
-import { ref } from 'vue'
-import type { Credentials } from '@/types/Credentials.ts'
-
-const email = ref<string>('')
-const password = ref<string>('')
-
-const handleLogin = () => {
-  const credentials: Credentials = {
-    email: email.value,
-    password: password.value,
-  }
-
-  console.log('Do something...')
-
-  console.log(credentials)
-}
-</script>
 
 <style scoped>
 .card {
