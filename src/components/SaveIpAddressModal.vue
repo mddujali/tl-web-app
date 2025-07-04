@@ -176,7 +176,6 @@ const handleSave = async (): Promise<void> => {
 
               <input
                 type="text"
-                class="form-control"
                 :class="[
                   'form-control',
                   { 'is-invalid': errors.ip_address && errors.ip_address.length > 0 },
@@ -200,7 +199,6 @@ const handleSave = async (): Promise<void> => {
 
               <input
                 type="text"
-                class="form-control"
                 :class="['form-control', { 'is-invalid': errors.label && errors.label.length > 0 }]"
                 id="label"
                 v-model="label"
@@ -216,7 +214,6 @@ const handleSave = async (): Promise<void> => {
 
               <input
                 type="text"
-                class="form-control"
                 :class="[
                   'form-control',
                   { 'is-invalid': errors.comment && errors.comment.length > 0 },

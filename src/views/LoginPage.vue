@@ -92,12 +92,11 @@ const handleLogin = async (): Promise<void> => {
           <label for="email" class="form-label fw-bold">Email</label>
 
           <input
-            v-model="email"
             type="email"
             id="email"
-            class="form-control"
             :class="['form-control', { 'is-invalid': errors.email && errors.email.length > 0 }]"
             placeholder="Enter your email"
+            v-model="email"
           />
 
           <div v-for="(error, index) in errors.email" :key="index" class="invalid-feedback">
@@ -109,15 +108,14 @@ const handleLogin = async (): Promise<void> => {
           <label for="password" class="form-label fw-bold">Password</label>
 
           <input
-            v-model="password"
             type="password"
             id="password"
-            class="form-control"
             :class="[
               'form-control',
               { 'is-invalid': errors.password && errors.password.length > 0 },
             ]"
             placeholder="Enter your password"
+            v-model="password"
           />
 
           <div v-for="(error, index) in errors.password" :key="index" class="invalid-feedback">
