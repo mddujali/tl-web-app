@@ -8,6 +8,7 @@ export const useAuthStore = defineStore('auth', {
   state: (): AuthState => ({
     accessToken: null,
     refreshToken: null,
+    isAuthenticated: false,
   }),
 
   actions: {
@@ -18,6 +19,7 @@ export const useAuthStore = defineStore('auth', {
 
         this.accessToken = data.access_token
         this.refreshToken = data.refresh_token
+        this.isAuthenticated = true
 
         localStorage.setItem('accessToken', this.accessToken!)
         localStorage.setItem('refreshToken', this.refreshToken!)
@@ -45,9 +47,21 @@ export const useAuthStore = defineStore('auth', {
     clearAuthState(): void {
       this.accessToken = null
       this.refreshToken = null
+      this.isAuthenticated = false
 
       localStorage.removeItem('accessToken')
       localStorage.removeItem('refreshToken')
+    },
+
+    loadAuthState(): void {
+      const accessToken = localStorage.getItem('accessToken')
+      const refreshToken = localStorage.getItem('refreshToken')
+
+      if (accessToken && refreshToken) {
+        this.accessToken = accessToken
+        this.refreshToken = refreshToken
+        this.isAuthenticated = true
+      }
     },
   },
 })
