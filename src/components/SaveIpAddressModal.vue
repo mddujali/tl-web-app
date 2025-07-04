@@ -46,6 +46,8 @@ const handleClose = async (): Promise<void> => {
 }
 
 const handleSave = async (): Promise<void> => {
+  resetMessages()
+
   try {
     await api.post(
       'ip-addresses',
@@ -108,6 +110,7 @@ const handleSave = async (): Promise<void> => {
     tabindex="-1"
     aria-labelledby="saveIpAddressModalLabel"
     aria-hidden="true"
+    data-bs-backdrop="false"
   >
     <div class="modal-dialog">
       <div class="modal-content">

@@ -22,9 +22,10 @@ const handleLogout = async (): Promise<void> => {
         isAxiosError: boolean
         response: {
           status: number
-          data: { errors?: { email: string[]; password: string[] }; message: string }
+          data: { errors: unknown; message: string }
         }
       }
+
       if (axiosError.isAxiosError) {
         errorMessage = _.get(
           axiosError,

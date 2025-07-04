@@ -3,16 +3,32 @@ import { ref } from 'vue'
 import type { Credentials } from '@/types/Credentials.ts'
 import { useAuthStore } from '@/stores/auth'
 import { useRouter } from 'vue-router'
+import type { LoginValidationErrors } from '@/types/LoginValidationErrors.ts'
+import _ from 'lodash'
 
+const defaultErrors = { email: [], password: [] }
 const email = ref<string>('')
 const password = ref<string>('')
 const errorMessage = ref<string>('')
-const errors = ref<{ email: string[]; password: string[] }>({
-  email: [],
-  password: [],
-})
+const errors = ref<LoginValidationErrors>(defaultErrors)
 const authStore = useAuthStore()
 const router = useRouter()
+
+const resetFields = (): void => {
+  email.value = ''
+  password.value = ''
+}
+
+const resetMessages = (): void => {
+  errorMessage.value = ''
+  errors.value = defaultErrors
+}
+
+const resetForm = (): void => {
+  resetFields()
+
+  resetMessages()
+}
 
 const handleLogin = async (): Promise<void> => {
   const credentials: Credentials = {
@@ -20,8 +36,12 @@ const handleLogin = async (): Promise<void> => {
     password: password.value,
   }
 
+  resetMessages()
+
   try {
     await authStore.login(credentials)
+
+    resetForm()
 
     await router.push({ name: 'ipManagement' })
   } catch (error: unknown) {
@@ -30,7 +50,7 @@ const handleLogin = async (): Promise<void> => {
         isAxiosError: boolean
         response: {
           status: number
-          data: { errors?: { email: string[]; password: string[] }; message: string }
+          data: { errors: LoginValidationErrors; message: string }
         }
       }
 
@@ -38,12 +58,16 @@ const handleLogin = async (): Promise<void> => {
         const errorResponse = axiosError.response
 
         if (errorResponse.status === 422) {
-          errors.value = errorResponse.data.errors || { email: [], password: [] }
+          errors.value = errorResponse.data.errors || defaultErrors
 
           return
         }
 
-        errorMessage.value = errorResponse.data.message
+        errorMessage.value = _.get(
+          errorResponse,
+          'data.message',
+          'Login attempt failed. Please try again later.',
+        )
 
         return
       }
@@ -72,7 +96,7 @@ const handleLogin = async (): Promise<void> => {
             type="email"
             id="email"
             class="form-control"
-            :class="['form-control', { 'is-invalid': errors.email.length > 0 }]"
+            :class="['form-control', { 'is-invalid': errors.email && errors.email.length > 0 }]"
             placeholder="Enter your email"
           />
 
@@ -89,7 +113,10 @@ const handleLogin = async (): Promise<void> => {
             type="password"
             id="password"
             class="form-control"
-            :class="['form-control', { 'is-invalid': errors.email.length > 0 }]"
+            :class="[
+              'form-control',
+              { 'is-invalid': errors.password && errors.password.length > 0 },
+            ]"
             placeholder="Enter your password"
           />
 
