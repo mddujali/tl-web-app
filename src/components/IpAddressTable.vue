@@ -33,6 +33,12 @@ const handleEdit = (): void => {}
 
 const handleDelete = (): void => {}
 
+const triggerRefreshData = async (): Promise<void> => {
+  await handleFetchIpAddresses()
+}
+
+defineExpose({ triggerRefreshData })
+
 onMounted(() => {
   void handleFetchIpAddresses()
 })

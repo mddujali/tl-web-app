@@ -14,6 +14,7 @@ const successMessage = ref<string>('')
 const errorMessage = ref<string>('')
 const errors = ref<IpAddressValidationErrors>(defaultErrors)
 const authStore = useAuthStore()
+const emit = defineEmits<{ ipAddressSaved: [] }>()
 
 const resetFields = (): void => {
   ipAddress.value = ''
@@ -66,6 +67,8 @@ const handleSave = async (): Promise<void> => {
     successMessage.value = 'IP address has been saved.'
 
     resetFields()
+
+    emit('ipAddressSaved')
   } catch (error: unknown) {
     if (error && typeof error === 'object' && 'isAxiosError' in error) {
       const axiosError = error as {

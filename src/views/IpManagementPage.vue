@@ -2,6 +2,7 @@
 import IpAddressTable from '@/components/IpAddressTable.vue'
 import SaveIpAddressModal from '@/components/SaveIpAddressModal.vue'
 import { Modal } from 'bootstrap'
+import { ref } from 'vue'
 
 const handleAdd = (): void => {
   const modalElement = document.getElementById('saveIpAddressModal')
@@ -11,6 +12,12 @@ const handleAdd = (): void => {
 
     modal.show()
   }
+}
+
+const ipAddressTableRef = ref<InstanceType<typeof IpAddressTable>>()
+
+const handleIpAddressSaved = async (): Promise<void> => {
+  await ipAddressTableRef.value?.triggerRefreshData()
 }
 </script>
 
@@ -26,10 +33,10 @@ const handleAdd = (): void => {
           </button>
         </div>
 
-        <IpAddressTable />
+        <IpAddressTable ref="ipAddressTableRef" />
       </div>
     </div>
 
-    <SaveIpAddressModal />
+    <SaveIpAddressModal @ipAddressSaved="handleIpAddressSaved()" />
   </div>
 </template>
