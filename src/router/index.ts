@@ -37,13 +37,24 @@ const router = createRouter({
   routes,
 })
 
-router.beforeEach((to, from, next) => {
+router.beforeEach(async (to, from, next) => {
   const userStore = useUserStore()
 
-  if (to.name === 'auditLogs' && userStore.role !== 'super-admin') {
-    next({ name: 'ipManagement' })
+  if (to.name !== 'login') {
+    try {
+      await userStore.fetch()
 
-    return
+      if (to.name === 'auditLogs' && userStore.role !== 'super-admin') {
+        next({ name: 'ipManagement' })
+
+        return
+      }
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (error: unknown) {
+      next({ name: 'login' })
+
+      return
+    }
   }
 
   next()
