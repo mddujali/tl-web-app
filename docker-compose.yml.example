@@ -1,0 +1,74 @@
+services:
+    # Development service
+    web-app-dev:
+        image: node:22-alpine
+        container_name: web-app-dev
+        working_dir: /app
+        volumes:
+            - .:/app
+            - node_modules:/app/node_modules
+        ports:
+            - '5173:5173'
+            - '4173:4173'
+        environment:
+            - NODE_ENV=development
+        command: sh -c "npm install && npm run dev -- --host 0.0.0.0"
+        networks:
+            - web-app-network
+        profiles:
+            - dev
+
+    # Production service
+    web-app-prod:
+        build:
+            context: .
+            dockerfile: docker/Dockerfile
+        container_name: web-app-prod
+        ports:
+            - '8080:80'
+        environment:
+            - NODE_ENV=production
+        networks:
+            - web-app-network
+        profiles:
+            - prod
+
+    # Testing service (for running tests)
+    web-app-test:
+        image: node:22-alpine
+        container_name: web-app-test
+        working_dir: /app
+        volumes:
+            - .:/app
+            - node_modules:/app/node_modules
+        environment:
+            - NODE_ENV=test
+        command: sh -c "npm install && npm run test:unit"
+        networks:
+            - web-app-network
+        profiles:
+            - test
+
+    # Cypress E2E testing service
+    web-app-e2e:
+        image: cypress/included:13.6.3
+        container_name: web-app-e2e
+        working_dir: /app
+        volumes:
+            - .:/app
+        environment:
+            - CYPRESS_baseUrl=http://web-app-dev:4173
+        depends_on:
+            - web-app-dev
+        command: sh -c "npm install && npm run test:e2e"
+        networks:
+            - web-app-network
+        profiles:
+            - e2e
+
+volumes:
+    node_modules:
+
+networks:
+    web-app-network:
+        driver: bridge
