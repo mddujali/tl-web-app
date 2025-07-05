@@ -56,7 +56,7 @@ const handleLogin = async (): Promise<void> => {
         isAxiosError: boolean
         response: {
           status: number
-          data: { errors: LoginValidationErrors; message: string }
+          data: { message: string; errors: LoginValidationErrors }
         }
       }
 

@@ -30,7 +30,7 @@ export class TokenManagerService {
     this.refreshSubscribers = []
   }
 
-  private async refreshAuthToken(): Promise<string> {
+  private async refreshAuthToken(): Promise<string | null> {
     const refresh_token = this.getStoredToken(API_CONFIG.TOKEN_KEYS.REFRESH)
     const response = await axios.post(
       `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.AUTH_REFRESH}`,
@@ -71,11 +71,13 @@ export class TokenManagerService {
 
     try {
       const newToken = await this.refreshAuthToken()
-      this.notifyRefreshSubscribers(newToken)
 
-      this.setAuthorizationHeader(originalRequest, newToken)
+      this.notifyRefreshSubscribers(newToken!)
+
+      this.setAuthorizationHeader(originalRequest, newToken!)
+
       return api(originalRequest)
-    } catch (error) {
+    } catch (error: unknown) {
       this.handleAuthFailure()
 
       return Promise.reject(error)

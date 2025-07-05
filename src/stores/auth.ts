@@ -1,11 +1,11 @@
 import { defineStore } from 'pinia'
 import api from '@/api'
 import type { Credentials } from '@/types/Credentials.ts'
-import type { AuthState } from '@/types/AuthState.ts'
+import type { TokenPair } from '@/types/TokenPair.ts'
 import type { AuthResponseData } from '@/types/AuthResponseData.ts'
 
 export const useAuthStore = defineStore('auth', {
-  state: (): AuthState => ({
+  state: (): TokenPair => ({
     access_token: null,
     refresh_token: null,
   }),
@@ -35,12 +35,12 @@ export const useAuthStore = defineStore('auth', {
       }
     },
 
-    setTokens(tokens: { access_token: string; refresh_token: string }): void {
-      this.access_token = tokens.access_token
-      this.refresh_token = tokens.refresh_token
+    setTokens(token: TokenPair): void {
+      this.access_token = token.access_token
+      this.refresh_token = token.refresh_token
 
-      localStorage.setItem('access_token', tokens.access_token)
-      localStorage.setItem('refresh_token', tokens.refresh_token)
+      localStorage.setItem('access_token', token.access_token!)
+      localStorage.setItem('refresh_token', token.refresh_token!)
     },
 
     clearAuthState(): void {

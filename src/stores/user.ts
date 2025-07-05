@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
-import type { CurrentUser } from '@/types/CurrentUser.ts'
 import api from '@/api'
+import type { CurrentUser } from '@/types/CurrentUser.ts'
+import type { ProfileResponseData } from '@/types/ProfileResponseData.ts'
 
 export const useUserStore = defineStore('user', {
   state: (): CurrentUser => ({
@@ -16,7 +17,7 @@ export const useUserStore = defineStore('user', {
     async fetch(): Promise<void> {
       try {
         const response = await api.get('/profile')
-        const { data } = response.data
+        const { data }: ProfileResponseData = response.data
 
         this.id = data.id
         this.name = data.name

@@ -95,8 +95,8 @@ const handleSave = async (): Promise<void> => {
         response: {
           status: number
           data: {
-            errors?: IpAddressValidationErrors
             message: string
+            errors?: IpAddressValidationErrors
           }
         }
       }

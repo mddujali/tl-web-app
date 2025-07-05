@@ -1,9 +1,6 @@
+import type { TokenPair } from '@/types/TokenPair.ts'
+
 export interface AuthResponseData {
   message: string
-  data: {
-    access_token: string
-    refresh_token: string
-    token_type: string
-    expires_in: number
-  }
+  data: TokenPair
 }
